@@ -75,6 +75,11 @@ If you already have done calculations with a non-standardized cell, you will
 then need to figure out how to remap the labeled k-points in the choice of
 cell you did.
 
+Note: SeeK-path returns, in output, a transformation matrix. You can use
+this to understand the relationship between your input cell and the one
+standardized by SeeK-path. More details can be found below in the section
+*Transformation matrix*.
+
 ---------------
 Explicit k path
 ---------------
@@ -86,6 +91,39 @@ You might also be interested in the function
 that has a very similar interface, that produces an explicit list of k-points along
 the suggested band path. The function has the same interface as ``get_path``, but 
 has also an additional optional parameter ``reference_distance``, that is used as a reference target distance between neighboring k-points along the path. More detailed information can be found in the docstrings.
+
+---------------------
+Transformation matrix
+---------------------
+Before providing the suggested band path, SeeK-path will standardise the crystal structure (using routines in spglib, except for the case of triclinic cells).
+
+The standardisation consists of two steps:
+
+1. rearrangement of the lattice vectors as a linear combination of them (this e.g. contains permutations, inversion of one axis, changing a vector with a linear combination of one or more, ...). For instance, this will reshuffle the three orthogonal vectors of a tetragonal cell, so that the third vector is the different one. Or, for a supercell, it will rescale them to get the conventional cell.
+
+2. Vectors, their lengths and relative angles are now chosen; the triplet of vectors can now be rotated in Cartesian space, e.g. to have the first vector along the ``x`` axis, the second along ``y`` etc. Note that, in this step, if the cell is refined, cell lengths and relative angles can be slightly adjusted (e.g. the length of the three vectors is set to be the same for almost-cubic systems, and the angles to be exactly 90 degrees even if they weren't so).
+
+
+The get_path function of SeeK-path returns, on output, a ``transformation_matrix`` ``T``, that contains information on step 1. 
+
+This is defined as follows::
+
+  cell_orig = T * cell_conv,standard
+
+where ``*`` represents matrix multiplication, and the cells are written in the same format as in input to SeeK-path: ``cell[0,:]`` is the first cell vector, etc.
+
+* Note 1: that this transformation matrix relates the original cell with the conventional cell of the crystal, rather than the primitive. SeeK-path provides also the transformation from conventional to primitive independently.
+
+* Note 2: that this transformation matrix is the transpose of the one returned by spglib.
+
+This matrix can be used to know how the original cell is related to the final one (only for what concerns step 1).
+
+For step 2, you can calculate the rotation matrix multiplying the result of the formula above with the transformation matrix (using the output cell of SeeK-path), by the actual input to SeeK-path. The result ``R`` is normally a rotation matrix. However, special care must be used if the structure has been refined, because in this case the matrix obtained with this approach will not be exactly orthogonal.
+
+
+
+
+
 
 =================
 AiiDA integration
