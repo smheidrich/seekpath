@@ -99,26 +99,26 @@ Before providing the suggested band path, SeeK-path will standardise the crystal
 
 The standardisation consists of two steps:
 
-1. rearrangement of the lattice vectors as a linear combination of them (this e.g. contains permutations, inversion of one axis, changing a vector with a linear combination of one or more, ...). For instance, this will reshuffle the three orthogonal vectors of a tetragonal cell, so that the third vector is the different one. Or, for a supercell, it will rescale them to get the conventional cell.
+1. **rearrangement of the lattice vectors as a linear combination of them** (this, e.g., involves permutations, inversion of axes, changing a vector with a linear combination of them, ...). For instance, this will reshuffle the three orthogonal vectors of a tetragonal cell, so that the third vector is the one with different length. Or, for a supercell, it will rescale the cell to get the conventional cell.
 
-2. Vectors, their lengths and relative angles are now chosen; the triplet of vectors can now be rotated in Cartesian space, e.g. to have the first vector along the ``x`` axis, the second along ``y`` etc. Note that, in this step, if the cell is refined, cell lengths and relative angles can be slightly adjusted (e.g. the length of the three vectors is set to be the same for almost-cubic systems, and the angles to be exactly 90 degrees even if they weren't so).
+2. **rotation of Cartesian axes**: vectors, their lengths and relative angles are now chosen. The triplet of vectors can now be rotated in Cartesian space, e.g., to have the first vector along the ``x`` axis, the second along ``y`` etc. Note that, in this step, if the cell is refined, cell lengths and relative angles can be slightly adjusted (e.g. the length of the three vectors is set to be the same for almost-cubic systems, and the angles to be exactly 90 degrees even if they weren't so).
 
 
-The get_path function of SeeK-path returns, on output, a ``transformation_matrix`` ``T``, that contains information on step 1. 
+The ``get_path`` function of SeeK-path returns, on output, a ``transformation_matrix`` ``T``, that contains information on step 1. 
 
 This is defined as follows::
 
-  cell_orig = T * cell_conv,standard
+  cell_orig = T * cell_std
 
-where ``*`` represents matrix multiplication, and the cells are written in the same format as in input to SeeK-path: ``cell[0,:]`` is the first cell vector, etc.
+where ``cell_orig`` is the original cell provided in input by the user, ``cell_std`` is the *standardized, conventional cell* and ``*`` represents matrix multiplication. Note that the cells are written in the same format as in input to SeeK-path: the first row ``cell[0,:]`` is the first cell vector, etc.
 
-* Note 1: that this transformation matrix relates the original cell with the conventional cell of the crystal, rather than the primitive. SeeK-path provides also the transformation from conventional to primitive independently.
+* *Note 1*: that this transformation matrix relates the original cell with the *conventional* cell of the crystal, rather than the primitive. SeeK-path provides also the transformation from conventional to primitive independently, that allows you to get the total transformation matrix.
 
-* Note 2: that this transformation matrix is the transpose of the one returned by spglib.
+* *Note 2*: that this transformation matrix is the transpose of the one returned by spglib.
 
-This matrix can be used to know how the original cell is related to the final one (only for what concerns step 1).
+The matrix ``T`` can be used to know how the original cell is related to the final one (only for what concerns step 1).
 
-For step 2, you can calculate the rotation matrix multiplying the result of the formula above with the transformation matrix (using the output cell of SeeK-path), by the actual input to SeeK-path. The result ``R`` is normally a rotation matrix. However, special care must be used if the structure has been refined, because in this case the matrix obtained with this approach will not be exactly orthogonal.
+For step 2, you can calculate the rotation matrix multiplying the result of the formula above containing the transformation matrix (using the output cell of SeeK-path), by the actual input to SeeK-path. The result ``R`` is normally a rotation matrix. However, special care must be used if the structure has been refined, because in this case the matrix obtained with this approach will not be exactly orthogonal.
 
 
 
