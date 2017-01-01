@@ -120,6 +120,12 @@ def get_path(structure, with_time_reversal=True, threshold=1.e-7):
           is the first vector)
         - primitive_transformation_matrix: the transformation matrix P between
           the conventional and the primitive cell 
+        - conv_transformation_matrix: the transformation matrix T between
+          the input cell ``cell_orig`` and the conventional standard
+          cell ``cell_std``::
+
+            cell_orig = T * cell_std
+
         - inverse_primitive_transformation_matrix: the inverse of the matrix P
           (the determinant is integer and gives the ratio in volume between
           the conventional and primitive cells)
@@ -167,10 +173,12 @@ def get_path(structure, with_time_reversal=True, threshold=1.e-7):
     conv_types = dataset['std_types']
     a, b, c, cosalpha, cosbeta, cosgamma = get_cell_params(conv_lattice)
     spgrp_num = dataset['number']
-    # This is the transformation from the original to the crystallographic
-    # conventional (called std in spglib)
-    #  Lattice^{crystallographic_bravais} = L^{original} * transf_matrix
-    transf_matrix = dataset['transformation_matrix']
+    # This is the transformation T from the original to the crystallographic
+    # conventional (called std in spglib).
+    # We transpose it for our purposes (because we use lattices that have
+    # vectors as rows, rather than columns
+    # cell_orig = T * cell_std
+    transf_matrix = dataset['transformation_matrix'].T
     volume_conv_wrt_original = np.linalg.det(transf_matrix)
 
     # Get the properties of the spacegroup, needed to get the bravais_lattice
@@ -281,13 +289,19 @@ def get_path(structure, with_time_reversal=True, threshold=1.e-7):
             else:
                 ext_bravais = "mC3"
     elif bravais_lattice == "aP":
+        ### TODO: implement correct transformation matrix
+        ### For the time being, I set it to None
+        # TODO: implement the correct one (probably we need the matrix
+        # out from niggli, and then we can combine it with M2 and M3??)
+        # We set it to None for the time being to avoid confusion
+        transf_matrix = None
+
         # First step: cell that is Niggli reduced in reciprocal space
         # I use the default eps here, this could be changed
         reciprocal_cell_orig = get_reciprocal_cell_rows(conv_lattice)
         ## This is Niggli-reduced
         reciprocal_cell2 = spglib.niggli_reduce(reciprocal_cell_orig)
         real_cell2 = get_real_cell_from_reciprocal_rows(reciprocal_cell2)
-        # TODO: get transformation matrix?
 
         ka2, kb2, kc2, coskalpha2, coskbeta2, coskgamma2 = get_cell_params(
             reciprocal_cell2)
@@ -405,11 +419,6 @@ def get_path(structure, with_time_reversal=True, threshold=1.e-7):
         # Store the relative coords with respect to the new vectors
         # TODO: decide if we want to do %1. for the fractional coordinates
         conv_positions = np.dot(conv_pos_abs, np.linalg.inv(conv_lattice))
-        # TODO: implement the correct one (probably we need the matrix
-        # out from niggli, and then we can combine it with M2 and M3??)
-        # We set it to None for the time being to avoid confusion
-        transformation_matrix = None
-
     else:
         raise ValueError("Unknown type '{}' for spacegroup {}".format(
             bravais_lattice, dataset['number']))
@@ -489,9 +498,7 @@ def get_path(structure, with_time_reversal=True, threshold=1.e-7):
             # spg_mapping.get_P_matrix
             'inverse_primitive_transformation_matrix': invP,
             'primitive_transformation_matrix': P,
-            # For the time being disabled, not valid for aP lattices
-            # (for which we would need the transformation matrix from niggli)
-            #'transformation_matrix': transf_matrix,
+            'conv_transformation_matrix': transf_matrix,
             'volume_original_wrt_conv': volume_conv_wrt_original,
             'volume_original_wrt_prim': \
             volume_conv_wrt_original * np.linalg.det(invP),

@@ -78,6 +78,12 @@ def get_path(structure, with_time_reversal=True, recipe='hpkot',
           is the first vector)
         - primitive_transformation_matrix: the transformation matrix P between
           the conventional and the primitive cell 
+        - conv_transformation_matrix: the transformation matrix T between
+          the input cell ``cell_orig`` and the conventional standard
+          cell ``cell_std``::
+
+            cell_orig = T * cell_std
+            
         - inverse_primitive_transformation_matrix: the inverse of the matrix P
           (the determinant is integer and gives the ratio in volume between
           the conventional and primitive cells)
@@ -172,6 +178,14 @@ def get_explicit_k_path(structure, with_time_reversal=True,
         - reciprocal_primitive_lattice: reciprocal-cell vectors for the 
           primitive cell (vectors are rows: reciprocal_primitive_lattice[0,:] 
           is the first vector)
+        - primitive_transformation_matrix: the transformation matrix P between
+          the conventional and the primitive cell 
+        - conv_transformation_matrix: the transformation matrix T between
+          the input cell ``cell_orig`` and the conventional standard
+          cell ``cell_std``::
+
+            cell_orig = T * cell_std
+            
         - volume_original_wrt_prim: volume ratio of the user-provided cell
           with respect to the the crystallographic primitive cell 
         - explicit_kpoints_abs: List of the kpoints along the specific path in 
@@ -222,6 +236,10 @@ def get_explicit_k_path(structure, with_time_reversal=True,
         retdict['primitive_lattice'] = res['primitive_lattice']
         retdict['primitive_positions'] = res['primitive_positions']
         retdict['primitive_types'] = res['primitive_types']
+        retdict['primitive_transformation_matrix'] = res[
+            'primitive_transformation_matrix']
+        retdict['conv_transformation_matrix'] = res[
+            'conv_transformation_matrix']
         retdict['reciprocal_primitive_lattice'] = res[
             'reciprocal_primitive_lattice']
         retdict['volume_original_wrt_prim'] = res[

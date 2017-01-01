@@ -104,7 +104,7 @@ The standardisation consists of two steps:
 2. **rotation of Cartesian axes**: vectors, their lengths and relative angles are now chosen. The triplet of vectors can now be rotated in Cartesian space, e.g., to have the first vector along the ``x`` axis, the second along ``y`` etc. Note that, in this step, if the cell is refined, cell lengths and relative angles can be slightly adjusted (e.g. the length of the three vectors is set to be the same for almost-cubic systems, and the angles to be exactly 90 degrees even if they weren't so).
 
 
-The ``get_path`` function of SeeK-path returns, on output, a ``transformation_matrix`` ``T``, that contains information on step 1. 
+The ``get_path`` function of SeeK-path returns, on output, a ``conv_transformation_matrix`` ``T``, that contains information on step 1. 
 
 This is defined as follows::
 

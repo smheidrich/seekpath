@@ -193,6 +193,14 @@ def get_explicit_k_path(structure, with_time_reversal=True,
           is the first vector)
         - volume_original_wrt_prim: volume ratio of the user-provided cell
           with respect to the the crystallographic primitive cell 
+        - primitive_transformation_matrix: the transformation matrix P between
+          the conventional and the primitive cell 
+        - conv_transformation_matrix: the transformation matrix T between
+          the input cell ``cell_orig`` and the conventional standard
+          cell ``cell_std``::
+
+            cell_orig = T * cell_std
+                      
         - explicit_kpoints: An AiiDA KPointsData object (without weights)
           with the kpoints and the respective labels.
           For each segment, the two endpoints are always included, 
@@ -316,6 +324,12 @@ def get_path(structure, with_time_reversal=True,
           is the first vector)
         - primitive_transformation_matrix: the transformation matrix P between
           the conventional and the primitive cell 
+        - conv_transformation_matrix: the transformation matrix T between
+          the input cell ``cell_orig`` and the conventional standard
+          cell ``cell_std``::
+
+            cell_orig = T * cell_std
+            
         - inverse_primitive_transformation_matrix: the inverse of the matrix P
           (the determinant is integer and gives the ratio in volume between
           the conventional and primitive cells)
