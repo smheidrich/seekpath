@@ -103,7 +103,6 @@ The standardisation consists of two steps:
 
 2. **rotation of Cartesian axes**: vectors, their lengths and relative angles are now chosen. The triplet of vectors can now be rotated in Cartesian space, e.g., to have the first vector along the ``x`` axis, the second along ``y`` etc. Note that, in this step, if the cell is refined, cell lengths and relative angles can be slightly adjusted (e.g. the length of the three vectors is set to be the same for almost-cubic systems, and the angles to be exactly 90 degrees even if they weren't so).
 
-
 The ``get_path`` function of SeeK-path returns, on output, a ``conv_transformation_matrix`` ``T``, that contains information on step 1. 
 
 This is defined as follows::
@@ -118,9 +117,15 @@ where ``cell_orig`` is the original cell provided in input by the user, ``cell_s
 
 The matrix ``T`` can be used to know how the original cell is related to the final one (only for what concerns step 1).
 
-For step 2, you can calculate the rotation matrix multiplying the result of the formula above containing the transformation matrix (using the output cell of SeeK-path), by the actual input to SeeK-path. The result ``R`` is normally a rotation matrix. However, special care must be used if the structure has been refined, because in this case the matrix obtained with this approach will not be exactly orthogonal.
+For step 2, you can calculate the rotation matrix ``R`` multiplying the inverse of the result of the formula above containing the transformation matrix (using the output cell of SeeK-path), by the actual input to SeeK-path. The result ``R`` is normally a rotation matrix. However, special care must be used if the structure has been refined, because in this case the matrix obtained with this approach will not be exactly orthogonal.
 
+This means that, globally, the ``cell_input`` given as input to SeeK-path 
+is given by::
 
+  cell_input = T * cell_std * R
+
+where ``cell_std`` is the *conventional cell* output by SeeK-path, and ``R``
+is a rotation only if ``cell_input`` was already refined.
 
 
 
