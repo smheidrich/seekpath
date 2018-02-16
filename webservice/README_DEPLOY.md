@@ -6,7 +6,7 @@ This folder in currently not installed when you do
 
 First step: install dependencies:
 
-  pip install --user -r ../optional_requirements.txt
+  pip install --user -r ../optional-requirements.txt
 
 Then:
 
